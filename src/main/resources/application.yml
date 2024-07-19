@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: Travelbook-33
+
+  datasource:
+#    url: jdbc:postgresql://localhost:5432/travelbook
+#    username: postgres
+#    password: qwerty007
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-timeout: 30000
+
+  liquibase:
+    change-log: classpath:db/changelog/changelog-master.xml
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+
+  mail:
+    username: asgard033033@gmail.com
+    password: vhjfsqacbbmcznoi
+    host: smtp.gmail.com
+    port: 587
+    properties:
+      mail:
+        debug: true
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          ssl:
+            protocols: TLSv1.2
+            trust: smtp.gmail.com
+
+jwt:
+  secret: 'fckxnmhXT1dJznQqwL6oAZdnr7U6jPYXxeA28YTMf9w='  # Замените на ваш сгенерированный ключ
+  expiration: 3600000  # Пример: время истечения токена в миллисекундах (1 час)
+
+server:
+  port: ${PORT:8080}
+  address: 0.0.0.0
+  servlet:
+    context-path: /api
+
+logging:
+  level:
+    root: INFO
+    org.springframework: DEBUG
+    com.example: DEBUG
