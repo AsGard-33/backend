@@ -75,14 +75,17 @@ public class AuthControllerTest {
         loginDTO.setPassword("password");
 
         String expectedToken = "jwtToken";
+        String refreshToken = "refreshToken";
         when(authService.login(loginDTO.getUsername(), loginDTO.getPassword())).thenReturn(expectedToken);
+        when(authService.generateRefreshToken(loginDTO.getUsername())).thenReturn(refreshToken);
 
         ResponseEntity<LoginResponseDTO> response = authController.login(loginDTO, httpServletResponse);
 
         assertEquals(200, response.getStatusCodeValue());
         assertEquals(expectedToken, response.getBody().getAccess_token());
         verify(authService).login(loginDTO.getUsername(), loginDTO.getPassword());
-        verify(httpServletResponse).addCookie(any(Cookie.class));
+        verify(authService).generateRefreshToken(loginDTO.getUsername());
+        verify(httpServletResponse, times(2)).addCookie(any(Cookie.class));
     }
 
 

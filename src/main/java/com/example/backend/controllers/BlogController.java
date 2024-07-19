@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/blogs")
+@RequestMapping("/blogs")
 @Validated
 public class BlogController {
 
