@@ -18,6 +18,10 @@ jwt:
   secret: 'fckxnmhXT1dJznQqwL6oAZdnr7U6jPYXxeA28YTMf9w='  # Замените на ваш сгенерированный ключ
   expiration: 3600000  # Пример: время истечения токена в миллисекундах (1 час)
 
+server:
+  port: ${PORT:8080}
+  address: 0.0.0.0
+
 logging:
   level:
     root: INFO

@@ -42,22 +42,6 @@ public class AuthService {
         return jwtUtil.generateToken(username);
     }
 
-    // Генерация рефреш токена
-    public String generateRefreshToken(String username) {
-        return jwtUtil.generateRefreshToken(username);
-    }
-
-    // Валидация рефреш токена
-    public boolean validateRefreshToken(String token) {
-        // Просто проверяем не истек ли токен, так как имя пользователя не нужно для этой операции
-        return jwtUtil.validateToken(token);
-    }
-
-    // Извлечение имени пользователя из рефреш токена
-    public String extractUsernameFromRefreshToken(String token) {
-        return jwtUtil.extractUsername(token);
-    }
-
     public User authenticate(String username, String password) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
