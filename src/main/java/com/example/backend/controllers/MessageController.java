@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/messages")
+@RequestMapping("/api/messages")
 @Validated
 public class MessageController {
 

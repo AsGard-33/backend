@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/locations")
+@RequestMapping("/api/locations")
 @Validated
 public class LocationController {
 
