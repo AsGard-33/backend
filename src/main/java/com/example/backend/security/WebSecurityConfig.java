@@ -28,7 +28,7 @@ public class WebSecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()  // Проверьте пути
+                        .requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/api/**").permitAll()  // Разрешить доступ к этим путям
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
