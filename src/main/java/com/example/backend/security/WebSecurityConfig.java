@@ -33,7 +33,7 @@ public class WebSecurityConfig {
                 .cors(cors -> cors
                         .configurationSource(request -> {
                             CorsConfiguration configuration = new CorsConfiguration();
-                            configuration.setAllowedOrigins(Arrays.asList("https://seal-app-9hke2.ondigitalocean.app"));
+                            configuration.setAllowedOrigins(Arrays.asList("https://coral-app-twb8l.ondigitalocean.app")); // Измененный URL
                             configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                             configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
                             configuration.setAllowCredentials(true);
@@ -48,7 +48,6 @@ public class WebSecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
 
