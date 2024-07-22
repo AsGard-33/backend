@@ -54,7 +54,7 @@ public class UserController {
         return ResponseEntity.ok(updatedUser);
     }
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         List<UserDTO> users = userService.findAllUsers();
         return ResponseEntity.ok(users);

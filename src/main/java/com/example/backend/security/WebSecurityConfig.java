@@ -13,6 +13,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -33,7 +34,7 @@ public class WebSecurityConfig {
                 .cors(cors -> cors
                         .configurationSource(request -> {
                             CorsConfiguration configuration = new CorsConfiguration();
-                            configuration.setAllowedOrigins(Arrays.asList("https://coral-app-twb8l.ondigitalocean.app")); // Измененный URL
+                            configuration.setAllowedOrigins(List.of("https://coral-app-twb8l.ondigitalocean.app")); // Измененный URL
                             configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                             configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
                             configuration.setAllowCredentials(true);
