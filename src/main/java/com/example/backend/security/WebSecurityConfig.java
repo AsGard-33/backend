@@ -34,7 +34,7 @@ public class WebSecurityConfig {
                 .cors(cors -> cors
                         .configurationSource(request -> {
                             CorsConfiguration configuration = new CorsConfiguration();
-                            configuration.setAllowedOrigins(List.of("https://coral-app-twb8l.ondigitalocean.app")); // Измененный URL
+                            configuration.setAllowedOrigins(List.of("http://35.238.67.38/")); // Измененный URL
                             configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                             configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
                             configuration.setAllowCredentials(true);
