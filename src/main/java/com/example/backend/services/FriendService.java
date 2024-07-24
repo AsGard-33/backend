@@ -50,4 +50,16 @@ public class FriendService {
         Friend friendRelation = friendRepository.findByUserAndFriend(user, friend).orElseThrow(() -> new RuntimeException("Friend relation not found"));
         friendRepository.delete(friendRelation);
     }
+
+    public List<FriendDTO> getAllFriends() {
+        return friendRepository.findAll()
+                .stream()
+                .map(friendConverter::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    // Оставляем этот метод пустым, потому что он должен быть реализован в FriendConverter
+    private FriendDTO toDTO(Friend friend) {
+        return friendConverter.toDTO(friend);
+    }
 }

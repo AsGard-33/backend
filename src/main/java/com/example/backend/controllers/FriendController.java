@@ -34,4 +34,9 @@ public class FriendController {
         friendService.removeFriend(userId, friendId);
         return ResponseEntity.ok().build();
     }
+    @GetMapping("/all")
+    public ResponseEntity<List<FriendDTO>> getAllFriends() {
+        List<FriendDTO> friends = friendService.getAllFriends();
+        return ResponseEntity.ok(friends);
+    }
 }

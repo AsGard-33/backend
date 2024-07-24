@@ -11,12 +11,16 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 public class PhotoControllerTest {
@@ -52,16 +56,18 @@ public class PhotoControllerTest {
 
     @Test
     public void testUploadPhoto() {
+        MultipartFile photoFile = new MockMultipartFile("photo", "photo.jpg", "image/jpeg", "photo content".getBytes());
+
         when(photoConverter.toEntity(any(PhotoDTO.class))).thenReturn(photo);
         when(photoService.savePhoto(any(Photo.class))).thenReturn(photo);
         when(photoConverter.toDTO(any(Photo.class))).thenReturn(photoDTO);
 
-        ResponseEntity<PhotoDTO> response = photoController.uploadPhoto(photoDTO);
+        ResponseEntity<PhotoDTO> response = photoController.uploadPhoto("Test title", photoFile, "Test description", 1L);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(photoDTO, response.getBody());
         verify(photoService, times(1)).savePhoto(photo);
-        verify(photoConverter, times(1)).toEntity(photoDTO);
+        verify(photoConverter, times(1)).toEntity(any(PhotoDTO.class));
         verify(photoConverter, times(1)).toDTO(photo);
     }
 
@@ -76,6 +82,20 @@ public class PhotoControllerTest {
         assertEquals(1, response.getBody().size());
         assertEquals(photoDTO, response.getBody().get(0));
         verify(photoService, times(1)).findByUserId(1L);
+        verify(photoConverter, times(1)).toDTO(photo);
+    }
+
+    @Test
+    public void testGetAllPhotos() {
+        when(photoService.findAllPhotos()).thenReturn(Arrays.asList(photo));
+        when(photoConverter.toDTO(any(Photo.class))).thenReturn(photoDTO);
+
+        ResponseEntity<List<PhotoDTO>> response = photoController.getAllPhotos();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().size());
+        assertEquals(photoDTO, response.getBody().get(0));
+        verify(photoService, times(1)).findAllPhotos();
         verify(photoConverter, times(1)).toDTO(photo);
     }
 

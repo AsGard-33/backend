@@ -46,4 +46,7 @@ public class BlogService {
     public Blog findById(Long id) {
         return blogRepository.findById(id).orElseThrow(() -> new RuntimeException("Blog not found"));
     }
+    public List<Blog> findAllBlogs() {
+        return blogRepository.findAll();
+    }
 }

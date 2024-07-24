@@ -63,4 +63,10 @@ public class BlogController {
         Blog blog = blogService.findById(id);
         return ResponseEntity.ok(BlogConverter.toDTO(blog));
     }
+    @GetMapping("/all")
+    public ResponseEntity<List<BlogCreateDTO>> getAllBlogs() {
+        List<Blog> blogs = blogService.findAllBlogs();
+        List<BlogCreateDTO> blogDTOs = blogs.stream().map(BlogConverter::toDTO).collect(Collectors.toList());
+        return ResponseEntity.ok(blogDTOs);
+    }
 }
