@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -30,22 +29,13 @@ import java.util.stream.Collectors;
 @Validated
 public class PhotoController {
 
-    private static final Logger logger = LoggerFactory.getLogger(PhotoController.class);
+    @Autowired
+    private PhotoService photoService;
 
-    private final PhotoService photoService;
-    private final PhotoConverter photoConverter;
+    @Autowired
+    private PhotoConverter photoConverter;
 
-    @Value("${uploadDir}") // Подставьте сюда правильное название переменной
-    private String uploadDir;
-
-    public PhotoController(PhotoService photoService, PhotoConverter photoConverter) {
-        this.photoService = photoService;
-        this.photoConverter = photoConverter;
-    }
-
-    public void setUploadDir(String uploadDir) {
-        this.uploadDir = uploadDir;
-    }
+    private final Logger logger = LoggerFactory.getLogger(PhotoController.class);
 
     @PostMapping(path = "/upload", consumes = "multipart/form-data")
     public ResponseEntity<PhotoDTO> uploadPhoto(
@@ -56,8 +46,10 @@ public class PhotoController {
         try {
             logger.info("Uploading photo with title: {}", title);
 
+            // Логика сохранения файла и получения URL
             String url = savePhoto(photo);
 
+            // Создание PhotoDTO
             PhotoDTO photoDTO = new PhotoDTO();
             photoDTO.setTitle(title);
             photoDTO.setUrl(url);
@@ -78,7 +70,7 @@ public class PhotoController {
 
     private String savePhoto(MultipartFile photo) {
         String fileName = System.currentTimeMillis() + "_" + photo.getOriginalFilename();
-        Path uploadPath = Paths.get(uploadDir);
+        Path uploadPath = Paths.get("uploads");
 
         try {
             if (!Files.exists(uploadPath)) {
@@ -88,8 +80,9 @@ public class PhotoController {
             Path filePath = uploadPath.resolve(fileName);
             photo.transferTo(filePath.toFile());
 
-            return "/uploads/" + fileName;
+            return "/uploads/" + fileName; // Возвращаем URL сохраненного файла
         } catch (IOException e) {
+            logger.error("Failed to save file", e);
             throw new RuntimeException("Failed to save file", e);
         }
     }

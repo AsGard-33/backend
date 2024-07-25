@@ -14,11 +14,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -37,6 +42,7 @@ public class PhotoControllerTest {
 
     private Photo photo;
     private PhotoDTO photoDTO;
+    private final String uploadDir = "uploads";
 
     @BeforeEach
     public void setUp() {
@@ -54,8 +60,14 @@ public class PhotoControllerTest {
         photoDTO.setDescription("Test photo");
         photoDTO.setTitle("Test title");
 
-        // Установите значение uploadDir
-        photoController.setUploadDir("D:/IT/Travelbook_33B/backend/uploads");
+        Path uploadPath = Paths.get(uploadDir);
+        try {
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Could not create upload directory", e);
+        }
     }
 
     @Test
@@ -74,6 +86,7 @@ public class PhotoControllerTest {
         verify(photoConverter, times(1)).toEntity(any(PhotoDTO.class));
         verify(photoConverter, times(1)).toDTO(photo);
     }
+
 
     @Test
     public void testGetAllPhotosByUser() {
