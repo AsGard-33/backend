@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/photos")
+@RequestMapping("/photos")
 @Validated
 public class PhotoController {
 
@@ -64,7 +64,15 @@ public class PhotoController {
 
     private String savePhoto(MultipartFile photo) {
         String fileName = System.currentTimeMillis() + "_" + photo.getOriginalFilename();
-        String uploadDir = "D:/IT/Travelbook_33B/backend/uploads"; // Абсолютный путь к папке uploads
+
+        // Используем переменную окружения для пути сохранения
+        String uploadDir = System.getenv("UPLOAD_DIR");
+
+        if (uploadDir == null) {
+            // Если переменная окружения не установлена, используем локальный путь
+            uploadDir = "D:/IT/Travelbook_33B/backend/uploads"; // Локальный путь к папке uploads
+        }
+
         File uploadDirFile = new File(uploadDir);
         if (!uploadDirFile.exists()) {
             uploadDirFile.mkdirs();
