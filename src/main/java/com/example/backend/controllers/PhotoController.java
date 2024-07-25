@@ -1,22 +1,26 @@
 package com.example.backend.controllers;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.example.backend.domain.dto.PhotoDTO;
 import com.example.backend.domain.entity.Photo;
 import com.example.backend.services.PhotoService;
 import com.example.backend.utils.PhotoConverter;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,11 +29,16 @@ import java.util.stream.Collectors;
 @Validated
 public class PhotoController {
 
+    private static final Logger logger = LoggerFactory.getLogger(PhotoController.class);
+
     @Autowired
     private PhotoService photoService;
 
     @Autowired
     private PhotoConverter photoConverter;
+
+    // Используйте переменные окружения для пути к папке
+    private final String uploadDir = System.getenv("UPLOAD_DIR");
 
     @Operation(summary = "Upload a photo", description = "Uploads a photo with the specified details")
     @ApiResponses(value = {
@@ -43,6 +52,8 @@ public class PhotoController {
             @RequestParam("description") String description,
             @RequestParam("userId") Long userId) {
         try {
+            logger.info("Uploading photo with title: {}", title);
+
             // Логика сохранения файла и получения URL
             String url = savePhoto(photo);
 
@@ -56,36 +67,31 @@ public class PhotoController {
             Photo photoEntity = photoConverter.toEntity(photoDTO);
             Photo savedPhoto = photoService.savePhoto(photoEntity);
             PhotoDTO savedPhotoDTO = photoConverter.toDTO(savedPhoto);
+
+            logger.info("Successfully uploaded photo with URL: {}", url);
             return ResponseEntity.ok(savedPhotoDTO);
         } catch (Exception e) {
+            logger.error("Error uploading photo", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
     private String savePhoto(MultipartFile photo) {
         String fileName = System.currentTimeMillis() + "_" + photo.getOriginalFilename();
+        Path uploadPath = Paths.get(uploadDir);
 
-        // Используем переменную окружения для пути сохранения
-        String uploadDir = System.getenv("UPLOAD_DIR");
-
-        if (uploadDir == null) {
-            // Если переменная окружения не установлена, используем локальный путь
-            uploadDir = "D:/IT/Travelbook_33B/backend/uploads"; // Локальный путь к папке uploads
-        }
-
-        File uploadDirFile = new File(uploadDir);
-        if (!uploadDirFile.exists()) {
-            uploadDirFile.mkdirs();
-        }
-        File file = new File(uploadDirFile, fileName);
         try {
-            photo.transferTo(file); // Метод может выбросить IOException и IllegalStateException
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            Path filePath = uploadPath.resolve(fileName);
+            photo.transferTo(filePath.toFile());
+
+            return "/uploads/" + fileName; // Возвращаем URL сохраненного файла
         } catch (IOException e) {
-            throw new RuntimeException("Failed to save file due to IOException", e);
-        } catch (IllegalStateException e) {
-            throw new RuntimeException("Failed to save file due to IllegalStateException", e);
+            throw new RuntimeException("Failed to save file", e);
         }
-        return "/uploads/" + fileName; // Возвращаем URL сохраненного файла
     }
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<PhotoDTO>> getAllPhotosByUser(@PathVariable Long userId) {
