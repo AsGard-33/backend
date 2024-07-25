@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
@@ -52,6 +53,9 @@ public class PhotoControllerTest {
         photoDTO.setUrl("http://example.com/photo.jpg");
         photoDTO.setDescription("Test photo");
         photoDTO.setTitle("Test title");
+
+        // Установите значение uploadDir
+        photoController.setUploadDir("D:/IT/Travelbook_33B/backend/uploads");
     }
 
     @Test

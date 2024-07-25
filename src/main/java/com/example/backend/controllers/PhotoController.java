@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -31,20 +32,21 @@ public class PhotoController {
 
     private static final Logger logger = LoggerFactory.getLogger(PhotoController.class);
 
-    @Autowired
-    private PhotoService photoService;
+    private final PhotoService photoService;
+    private final PhotoConverter photoConverter;
 
-    @Autowired
-    private PhotoConverter photoConverter;
+    @Value("${uploadDir}") // Подставьте сюда правильное название переменной
+    private String uploadDir;
 
-    // Используйте переменные окружения для пути к папке
-    private final String uploadDir = System.getenv("UPLOAD_DIR");
+    public PhotoController(PhotoService photoService, PhotoConverter photoConverter) {
+        this.photoService = photoService;
+        this.photoConverter = photoConverter;
+    }
 
-    @Operation(summary = "Upload a photo", description = "Uploads a photo with the specified details")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully uploaded photo"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
+    public void setUploadDir(String uploadDir) {
+        this.uploadDir = uploadDir;
+    }
+
     @PostMapping(path = "/upload", consumes = "multipart/form-data")
     public ResponseEntity<PhotoDTO> uploadPhoto(
             @RequestParam("title") String title,
@@ -54,10 +56,8 @@ public class PhotoController {
         try {
             logger.info("Uploading photo with title: {}", title);
 
-            // Логика сохранения файла и получения URL
             String url = savePhoto(photo);
 
-            // Создание PhotoDTO
             PhotoDTO photoDTO = new PhotoDTO();
             photoDTO.setTitle(title);
             photoDTO.setUrl(url);
@@ -88,11 +88,12 @@ public class PhotoController {
             Path filePath = uploadPath.resolve(fileName);
             photo.transferTo(filePath.toFile());
 
-            return "/uploads/" + fileName; // Возвращаем URL сохраненного файла
+            return "/uploads/" + fileName;
         } catch (IOException e) {
             throw new RuntimeException("Failed to save file", e);
         }
     }
+
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<PhotoDTO>> getAllPhotosByUser(@PathVariable Long userId) {
         List<Photo> photos = photoService.findByUserId(userId);
@@ -118,5 +119,4 @@ public class PhotoController {
         List<PhotoDTO> photoDTOs = photos.stream().map(photoConverter::toDTO).collect(Collectors.toList());
         return ResponseEntity.ok(photoDTOs);
     }
-
 }
