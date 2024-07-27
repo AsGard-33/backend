@@ -36,7 +36,7 @@ public class PhotoController {
     @Autowired
     private PhotoConverter photoConverter;
 
-    @Value("${file.upload-dir}")
+    @Value("${upload.dir}")
     private String uploadDir;
 
     @PostMapping(path = "/upload", consumes = "multipart/form-data")

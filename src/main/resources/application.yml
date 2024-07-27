@@ -23,10 +23,13 @@ spring:
     resources:
       static-locations: file:./uploads/
 
+upload:
+  dir: ./uploads/
+
   http:
-    multipart:
-      max-file-size: 500MB
-      max-request-size: 500MB
+   multipart:
+     max-file-size: 500MB
+     max-request-size: 500MB
 
 jwt:
   secret: 'fckxnmhXT1dJznQqwL6oAZdnr7U6jPYXxeA28YTMf9w='  # Замените на ваш сгенерированный ключ
@@ -47,5 +50,3 @@ logging:
 #file:
 #  upload-dir: D:/IT/Travelbook_33B/backend/uploads
 
-file:
-  upload-dir: ./uploads
