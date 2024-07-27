@@ -36,7 +36,7 @@ public class PhotoController {
     @Autowired
     private PhotoConverter photoConverter;
 
-    @Value("${upload.dir}")
+    @Value("${file.upload-dir}")
     private String uploadDir;
 
     @PostMapping(path = "/upload", consumes = "multipart/form-data")
@@ -75,7 +75,7 @@ public class PhotoController {
         } catch (IOException e) {
             throw new RuntimeException("Failed to save file due to IOException", e);
         }
-        return "/uploads/" + fileName; // Возвращаем относительный путь
+        return "/uploads/" + fileName; // Обновлено для возврата относительного пути
     }
 
     @GetMapping("/user/{userId}")
