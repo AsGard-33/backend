@@ -19,6 +19,10 @@ spring:
       hibernate:
         auto_quote_keyword: true
 
+  web:
+    resources:
+      static-locations: file:/path/to/uploads/
+
 jwt:
   secret: 'fckxnmhXT1dJznQqwL6oAZdnr7U6jPYXxeA28YTMf9w='  # Замените на ваш сгенерированный ключ
   expiration: 3600000  # Пример: время истечения токена в миллисекундах (1 час)
@@ -34,3 +38,9 @@ logging:
     root: INFO
     org.springframework: DEBUG
     com.example: DEBUG
+
+#file:
+#  upload-dir: D:/IT/Travelbook_33B/backend/uploads
+
+file:
+  upload-dir: /path/to/uploads

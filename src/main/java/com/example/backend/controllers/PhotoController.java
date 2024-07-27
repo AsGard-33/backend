@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -35,7 +36,8 @@ public class PhotoController {
     @Autowired
     private PhotoConverter photoConverter;
 
-    private final Logger logger = LoggerFactory.getLogger(PhotoController.class);
+    @Value("${file.upload-dir}")
+    private String uploadDir;
 
     @PostMapping(path = "/upload", consumes = "multipart/form-data")
     public ResponseEntity<PhotoDTO> uploadPhoto(
@@ -44,12 +46,8 @@ public class PhotoController {
             @RequestParam("description") String description,
             @RequestParam("userId") Long userId) {
         try {
-            logger.info("Uploading photo with title: {}", title);
-
-            // Логика сохранения файла и получения URL
             String url = savePhoto(photo);
 
-            // Создание PhotoDTO
             PhotoDTO photoDTO = new PhotoDTO();
             photoDTO.setTitle(title);
             photoDTO.setUrl(url);
@@ -59,32 +57,25 @@ public class PhotoController {
             Photo photoEntity = photoConverter.toEntity(photoDTO);
             Photo savedPhoto = photoService.savePhoto(photoEntity);
             PhotoDTO savedPhotoDTO = photoConverter.toDTO(savedPhoto);
-
-            logger.info("Successfully uploaded photo with URL: {}", url);
             return ResponseEntity.ok(savedPhotoDTO);
         } catch (Exception e) {
-            logger.error("Error uploading photo", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
     private String savePhoto(MultipartFile photo) {
         String fileName = System.currentTimeMillis() + "_" + photo.getOriginalFilename();
-        Path uploadPath = Paths.get("uploads");
-
-        try {
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
-
-            Path filePath = uploadPath.resolve(fileName);
-            photo.transferTo(filePath.toFile());
-
-            return "/uploads/" + fileName; // Возвращаем URL сохраненного файла
-        } catch (IOException e) {
-            logger.error("Failed to save file", e);
-            throw new RuntimeException("Failed to save file", e);
+        File uploadDirFile = new File(uploadDir);
+        if (!uploadDirFile.exists()) {
+            uploadDirFile.mkdirs();
         }
+        File file = new File(uploadDirFile, fileName);
+        try {
+            photo.transferTo(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save file due to IOException", e);
+        }
+        return "/uploads/" + fileName; // Возвращаем относительный путь
     }
 
     @GetMapping("/user/{userId}")
