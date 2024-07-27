@@ -19,12 +19,7 @@ spring:
       hibernate:
         auto_quote_keyword: true
 
-  web:
-    resources:
-      static-locations: file:./uploads/
 
-upload:
-  dir: ./uploads/
 
   http:
    multipart:
@@ -49,4 +44,7 @@ logging:
 
 #file:
 #  upload-dir: D:/IT/Travelbook_33B/backend/uploads
+
+file:
+  upload-dir: /path/to/uploads
 
