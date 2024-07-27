@@ -21,7 +21,7 @@ spring:
 
   web:
     resources:
-      static-locations: file:./uploads/
+      static-locations: file:uploads/
 
   http:
    multipart:
