@@ -1,9 +1,9 @@
 package com.example.backend.domain.dto;
 
+import com.example.backend.domain.entity.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
-
 import java.util.Objects;
 
 public class UserDTO {
@@ -18,6 +18,16 @@ public class UserDTO {
     @Email(message = "Email should be valid")
     @Size(max = 100, message = "Email should not exceed 100 characters")
     private String email;
+
+    private String avatarUrl;
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
 
     public Long getId() {
         return id;
@@ -52,6 +62,13 @@ public class UserDTO {
         this.email = email;
     }
 
+    public UserDTO(User user) {
+        this.id = user.getId();
+        this.username = user.getUsername();
+        this.email = user.getEmail();
+        this.avatarUrl = user.getAvatarUrl();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -59,11 +76,12 @@ public class UserDTO {
         UserDTO userDTO = (UserDTO) o;
         return Objects.equals(id, userDTO.id) &&
                 Objects.equals(username, userDTO.username) &&
-                Objects.equals(email, userDTO.email);
+                Objects.equals(email, userDTO.email) &&
+                Objects.equals(avatarUrl, userDTO.avatarUrl);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, email);
+        return Objects.hash(id, username, email, avatarUrl);
     }
 }

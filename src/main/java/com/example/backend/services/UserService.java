@@ -3,6 +3,7 @@ package com.example.backend.services;
 import com.example.backend.domain.dto.UserDTO;
 import com.example.backend.domain.entity.Location;
 import com.example.backend.domain.entity.User;
+import com.example.backend.exception.ResourceNotFoundException;
 import com.example.backend.repositories.LocationRepository;
 import com.example.backend.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +77,13 @@ public class UserService {
 
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
+    }
+
+    public UserDTO updateAvatar(Long userId, String avatarUrl) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        user.setAvatarUrl(avatarUrl);
+        userRepository.save(user);
+        return new UserDTO(user);
     }
 
 }

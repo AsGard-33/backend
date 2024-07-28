@@ -1,16 +1,17 @@
 package com.example.backend.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.example.backend.domain.dto.PhotoDTO;
 import com.example.backend.domain.entity.Photo;
 import com.example.backend.services.PhotoService;
 import com.example.backend.utils.PhotoConverter;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -19,9 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -75,7 +73,19 @@ public class PhotoController {
         } catch (IOException e) {
             throw new RuntimeException("Failed to save file due to IOException", e);
         }
-        return "/uploads/" + fileName; // Обновлено для возврата относительного пути
+        return "/uploads/" + fileName; // Return URL relative to the static resources path
+    }
+
+    @PostMapping(path = "/upload-url", consumes = "application/json")
+    public ResponseEntity<PhotoDTO> uploadPhotoByUrl(@RequestBody PhotoDTO photoDTO) {
+        try {
+            Photo photoEntity = photoConverter.toEntity(photoDTO);
+            Photo savedPhoto = photoService.savePhoto(photoEntity);
+            PhotoDTO savedPhotoDTO = photoConverter.toDTO(savedPhoto);
+            return ResponseEntity.ok(savedPhotoDTO);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
     @GetMapping("/user/{userId}")
@@ -103,4 +113,5 @@ public class PhotoController {
         List<PhotoDTO> photoDTOs = photos.stream().map(photoConverter::toDTO).collect(Collectors.toList());
         return ResponseEntity.ok(photoDTOs);
     }
+
 }

@@ -1,16 +1,19 @@
 package com.example.backend.controllers;
 
+import com.example.backend.domain.dto.AvatarUpdateDTO;
 import com.example.backend.domain.dto.UserDTO;
 import com.example.backend.domain.dto.UserUpdateDTO;
 import com.example.backend.domain.entity.User;
 import com.example.backend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
@@ -81,5 +84,16 @@ public class UserController {
 
     private UserDTO convertToDTO(User user) {
         return new UserDTO(user.getId(), user.getUsername(), user.getEmail());
+    }
+
+
+    @PutMapping("/{userId}/avatar")
+    public ResponseEntity<UserDTO> updateAvatar(@PathVariable Long userId, @RequestBody @Validated AvatarUpdateDTO avatarUpdateDTO) {
+        try {
+            UserDTO updatedUser = userService.updateAvatar(userId, avatarUpdateDTO.getAvatarUrl());
+            return ResponseEntity.ok(updatedUser);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 }

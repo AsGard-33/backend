@@ -3,7 +3,6 @@ package com.example.backend.domain.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -24,6 +23,9 @@ public class User {
 
     @Column(nullable = false)
     private String password;
+
+    @Column(name = "avatar_url")
+    private String avatarUrl;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -149,6 +151,14 @@ public class User {
 
     public void setFavoriteLocations(Set<Location> favoriteLocations) {
         this.favoriteLocations = favoriteLocations;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 
     @Override
